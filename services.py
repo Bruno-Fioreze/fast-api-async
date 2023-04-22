@@ -1,6 +1,7 @@
 from db.postgres import models
 from db.postgres.connection import async_session
 from sqlalchemy import delete
+from sqlalchemy.future import select
 
 class UserService:
     async def create(name: str):
@@ -14,10 +15,19 @@ class UserService:
             await session.execute(delete(models.User).where(models.User.id==pk))
             await session.commit()
             
+    async def list():
+        async with async_session() as session:
+            data = await session.execute(select(models.User))
+            return data.scalars().all()
 
 class FavoriteService:
-    async def add_favorite(user_id: int, symbol: str):
+    async def add(user_id: int, symbol: str):
         async with async_session() as session:
             favorite = models.Favorite(user_id=user_id, symbol=symbol)
             session.add(favorite)
+            await session.commit()
+
+    async def remove(user_id: int, symbol: str):
+        async with async_session() as session:
+            await session.execute(delete(models.Favorite).where(models.Favorite.user_id==user_id, models.Favorite.symbol==symbol))
             await session.commit()
