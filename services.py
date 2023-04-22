@@ -2,6 +2,8 @@ from db.postgres import models
 from db.postgres.connection import async_session
 from sqlalchemy import delete
 from sqlalchemy.future import select
+from aiohttp import ClientSession
+from datetime import datetime, timedelta
 
 class UserService:
     async def create(name: str):
@@ -31,3 +33,17 @@ class FavoriteService:
         async with async_session() as session:
             await session.execute(delete(models.Favorite).where(models.Favorite.user_id==user_id, models.Favorite.symbol==symbol))
             await session.commit()
+
+class AssetService:
+    async def day_summary(symbol: str):
+        with ClientSession() as session:
+            yesterday = datetime.now() - timedelta(days=1)
+            url  = f"https://www.mercadobitcoin.net/api/{symbol}/day-summary/{yesterday.year}/{yesterday.month}/{yesterday.day}/"
+            response = await session.get(url=url)
+            data = await response.json()
+            data = {
+                "highest": data["highest"],
+                "lowest": data["lowest"],
+                "symbol": symbol
+            }
+            return data
