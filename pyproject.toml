@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "fast-api-async"
+version = "0.1.0"
+description = ""
+authors = ["Bruno Fioreze"]
+readme = "README.md"
+packages = [{include = "fast_api_async"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.95.1"
+uvicorn = "^0.21.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
