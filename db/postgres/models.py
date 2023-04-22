@@ -4,14 +4,16 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     favorites = relationship("Favorite", backref="user")
     
-class Favorites(Base):
-    __tablename__ = 'favorite'
+class Favorite(Base):
+    __tablename__ = 'favorites'
     id = Column(Integer, primary_key=True, autoincrement=True)  
     symbol = Column(String)
-    user = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
     
+
+
