@@ -19,7 +19,12 @@ class UserListOutput(BaseModel):
 
     class Config:
         orm_mode = True
-        
+
+class DaySummaryOutpuy(BaseModel):
+    highest: float
+    lowest: float
+    symbol: str
+
 class UserFavoriteAddInput(BaseModel):
     user_id: int
     symbol: str

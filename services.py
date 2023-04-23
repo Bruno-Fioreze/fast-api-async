@@ -22,6 +22,11 @@ class UserService:
             data = await session.execute(select(models.User))
             return data.scalars().all()
 
+    async def by_id(pk: int):
+        async with async_session() as session:
+            data = await session.execute(select(models.User).where(models.User.id==pk))
+            return data.scalar()
+
 class FavoriteService:
     async def add(user_id: int, symbol: str):
         async with async_session() as session:
@@ -36,10 +41,11 @@ class FavoriteService:
 
 class AssetService:
     async def day_summary(symbol: str):
-        with ClientSession() as session:
+        async with ClientSession() as session:
+            headers = {'Accept': 'application/json'}
             yesterday = datetime.now() - timedelta(days=1)
             url  = f"https://www.mercadobitcoin.net/api/{symbol}/day-summary/{yesterday.year}/{yesterday.month}/{yesterday.day}/"
-            response = await session.get(url=url)
+            response = await session.get(url=url, headers=headers)
             data = await response.json()
             data = {
                 "highest": data["highest"],
