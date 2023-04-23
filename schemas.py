@@ -1,16 +1,19 @@
 from pydantic import BaseModel
 from typing import List
 
+
 class UserCreateInput(BaseModel):
     name: str
+
 
 class Favorite(BaseModel):
     id: int
     symbol: str
     user_id: int
-    
+
     class Config:
         orm_mode = True
+
 
 class UserListOutput(BaseModel):
     id: int
@@ -20,17 +23,21 @@ class UserListOutput(BaseModel):
     class Config:
         orm_mode = True
 
+
 class DaySummaryOutpuy(BaseModel):
     highest: float
     lowest: float
     symbol: str
 
+
 class UserFavoriteAddInput(BaseModel):
     user_id: int
     symbol: str
-    
+
+
 class Standard(BaseModel):
     message: str
+
 
 class ErrorOutput(Standard):
     detail: str

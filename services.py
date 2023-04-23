@@ -5,18 +5,19 @@ from sqlalchemy.future import select
 from aiohttp import ClientSession
 from datetime import datetime, timedelta
 
+
 class UserService:
     async def create(name: str):
         async with async_session() as session:
             user = models.User(name=name)
             session.add(user)
             await session.commit()
-            
+
     async def delete(pk: int):
         async with async_session() as session:
-            await session.execute(delete(models.User).where(models.User.id==pk))
+            await session.execute(delete(models.User).where(models.User.id == pk))
             await session.commit()
-            
+
     async def list():
         async with async_session() as session:
             data = await session.execute(select(models.User))
@@ -24,8 +25,11 @@ class UserService:
 
     async def by_id(pk: int):
         async with async_session() as session:
-            data = await session.execute(select(models.User).where(models.User.id==pk))
+            data = await session.execute(
+                select(models.User).where(models.User.id == pk)
+            )
             return data.scalar()
+
 
 class FavoriteService:
     async def add(user_id: int, symbol: str):
@@ -36,20 +40,26 @@ class FavoriteService:
 
     async def remove(user_id: int, symbol: str):
         async with async_session() as session:
-            await session.execute(delete(models.Favorite).where(models.Favorite.user_id==user_id, models.Favorite.symbol==symbol))
+            await session.execute(
+                delete(models.Favorite).where(
+                    models.Favorite.user_id == user_id, models.Favorite.symbol == symbol
+                )
+            )
             await session.commit()
+
 
 class AssetService:
     async def day_summary(symbol: str):
         async with ClientSession() as session:
-            headers = {'Accept': 'application/json'}
+            headers = {"Accept": "application/json"}
             yesterday = datetime.now() - timedelta(days=1)
-            url  = f"https://www.mercadobitcoin.net/api/{symbol}/day-summary/{yesterday.year}/{yesterday.month}/{yesterday.day}/"
+            BASE_URL = "https://www.mercadobitcoin.net/api/"
+            url = f"{BASE_URL}{symbol}/day-summary/{yesterday.year}/{yesterday.month}/{yesterday.day}/"
             response = await session.get(url=url, headers=headers)
             data = await response.json()
             data = {
                 "highest": data["highest"],
                 "lowest": data["lowest"],
-                "symbol": symbol
+                "symbol": symbol,
             }
             return data
